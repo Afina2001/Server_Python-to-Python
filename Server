@@ -1,0 +1,26 @@
+import socket
+import threading
+
+def manipulate_data(data):
+    return data + " from server xyz"
+
+def handle_client(client_socket):
+    data = client_socket.recv(1024).decode()
+    print("\nClient:", data, "\n")
+
+    modified_data = manipulate_data(data)
+    client_socket.send(modified_data.encode())
+    client_socket.close()
+
+if _name_ == "_main_":
+
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind(('192.168.23.133', 8080))
+    server_socket.listen()
+
+    while True:
+        client_socket, client_addr = server_socket.accept()
+        client_thread = threading.Thread(target=handle_client, args=(client_socket, ))
+        client_thread.start()
+
+server_socket.close()
